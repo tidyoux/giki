@@ -1,0 +1,15 @@
+
+p, li {
+    font-size: large;
+}
+
+th, td {
+    padding: 5px;
+}
+
+textarea#content {
+    height: 700px;
+    resize: none;
+    font-size: large;
+    font-family: inherit;
+}

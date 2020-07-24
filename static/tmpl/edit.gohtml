@@ -1,0 +1,20 @@
+{{define "edit"}}<!DOCTYPE html>
+<html>
+
+{{template "head"}}
+
+<body class="mdui-theme-primary-indigo mdui-theme-accent-deep-orange">
+  <div class="mdui-container mdui-typo mdui-m-t-1">
+    <form method="POST" action="/v1/article/{{.ID}}">
+      <div class="mdui-row mdui-m-b-2">
+        <div class="mdui-col-xs-12">
+          <textarea class="mdui-col-xs-12" id="content" name="content">{{.Content}}</textarea>
+        </div>
+      </div>
+      <input class="mdui-btn mdui-btn-raised mdui-ripple mdui-color-theme" type="submit" value="submit" />
+        <a class="mdui-btn mdui-ripple mdui-m-l-3" href="/v1/article/{{.ID}}">cancel</a>
+    </form>
+  </div>
+</body>
+
+</html>{{end}}

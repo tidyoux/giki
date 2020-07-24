@@ -1,0 +1,28 @@
+{{define "list"}}<!DOCTYPE html>
+<html>
+
+{{template "head"}}
+
+<body class="mdui-theme-primary-indigo mdui-theme-accent-deep-orange mdui-color-grey-200">
+  <div class="mdui-container mdui-typo">
+    <h1>{{.User}}'s wiki:</h1>
+    <div>
+      {{range .Articles}}
+      <div class="mdui-card mdui-m-b-2 mdui-hoverable">
+        <div class="mdui-card-content">
+          <a class="mdui-typo-title mdui-valign" href="/v1/article/{{.ID}}">
+            <i class="mdui-icon material-icons mdui-m-r-1">description</i>{{.Title}}
+          </a>
+          <div class="mdui-divider mdui-m-t-2"></div>
+          <div class="mdui-typo-caption-opacity">{{.FormatUpdatedAt "2006-01-02 15:04:05"}}</div>
+        </div>
+      </div>
+      {{end}}
+    </div>
+    <form method="POST" action="/v1/article">
+        <input class="mdui-fab mdui-fab-fixed mdui-color-theme" type="submit" value="+" />
+    </form>
+  </div>
+</body>
+
+</html>{{end}}

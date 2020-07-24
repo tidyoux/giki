@@ -1,0 +1,37 @@
+{{define "view"}}<!DOCTYPE html>
+<html>
+
+{{template "head" true}}
+
+<body class="mdui-theme-primary-indigo mdui-theme-accent-deep-orange">
+    <script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}
+});
+    </script>
+    <div class="mdui-container mdui-typo mdui-m-t-1 mdui-m-b-5">
+        <div>
+            <p><a class="mdui-btn mdui-btn-icon mdui-ripple" href="/v1/article">
+                    <i class="mdui-icon material-icons">home</i></a><a
+                class="mdui-btn mdui-btn-icon mdui-ripple mdui-m-l-1" href="/v1/article/{{.ID}}/edit">
+                    <i class="mdui-icon material-icons">edit</i></a>
+                <a class="mdui-btn mdui-btn-icon mdui-ripple mdui-m-l-1" href="/v1/article/{{.ID}}">
+                    <i class="mdui-icon material-icons">share</i></a>
+                <a class="mdui-btn mdui-btn-icon mdui-ripple mdui-float-right" mdui-dialog="{target: '#deleteConfirm'}">
+                    <i class="mdui-icon material-icons">delete</i></a></p>
+            <div class="mdui-dialog" id="deleteConfirm">
+                <div class="mdui-dialog-title">Delete file?</div>
+                <div class="mdui-dialog-actions">
+                    <form method="POST" action="/v1/article/{{.ID}}/delete">
+                        <input class="mdui-btn mdui-ripple" mdui-dialog-close="" value="cancle"/>
+                        <input class="mdui-btn mdui-ripple" type="submit" value="delete"/>
+                    </form>
+                </div>
+            </div>
+            <div class="mdui-divider"></div>
+        </div>
+        {{.RenderContent}}
+    </div>
+</body>
+
+</html>{{end}}
