@@ -46,7 +46,7 @@ func ViewArticle(c *gin.Context) {
 		username, _, _ = c.Request.BasicAuth()
 		id             = c.Param("id")
 	)
-	article, err := readArticle(username, id, nil)
+	article, err := readArticle(username, id)
 	if err != nil {
 		c.String(http.StatusInternalServerError, "read article failed, %v", err)
 		return
@@ -60,7 +60,7 @@ func EditArticle(c *gin.Context) {
 		username, _, _ = c.Request.BasicAuth()
 		id             = c.Param("id")
 	)
-	article, err := readArticle(username, id, nil)
+	article, err := readArticle(username, id)
 	if err != nil {
 		c.String(http.StatusInternalServerError, "read article failed, %v", err)
 		return
@@ -131,7 +131,7 @@ func listArticle(username string) (*types.Articles, error) {
 			return nil
 		}
 
-		article, err := readArticle(username, info.Name(), info)
+		article, err := readArticle(username, info.Name())
 		if err != nil {
 			return errors.Wrapf(err, "read article %s failed", info.Name())
 		}
@@ -158,17 +158,14 @@ var (
 	titleReg = regexp.MustCompile(`#\s+(.*?)\s*\n`)
 )
 
-func readArticle(username, id string, info os.FileInfo) (*types.ArticleDetail, error) {
-	path := articleFile(username, id)
-	if info == nil {
-		var err error
-		info, err = os.Stat(path)
-		if err != nil {
-			return nil, err
-		}
+func readArticle(username, id string) (*types.ArticleDetail, error) {
+	filePath := articleFile(username, id)
+	info, err := os.Stat(filePath)
+	if err != nil {
+		return nil, err
 	}
 
-	data, err := ioutil.ReadFile(path)
+	data, err := ioutil.ReadFile(filePath)
 	if err != nil {
 		return nil, err
 	}
