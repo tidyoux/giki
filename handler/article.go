@@ -5,8 +5,6 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
-	"regexp"
-	"sort"
 	"strconv"
 	"time"
 
@@ -18,7 +16,8 @@ import (
 
 func ListArticle(c *gin.Context) {
 	username, _, _ := c.Request.BasicAuth()
-	articles, err := listArticle(username)
+	tag := c.Query("tag")
+	articles, err := listArticle(username, tag)
 	if err != nil {
 		c.String(http.StatusInternalServerError, "list article failed, %v", err)
 		return
@@ -115,13 +114,18 @@ func articleFile(username, id string) string {
 	return filepath.Join(articlePath(username, id), FileName)
 }
 
-func listArticle(username string) (*types.Articles, error) {
-	var (
-		dbPath   = userDBPath(username)
-		articles = &types.Articles{
-			User: username,
+func listArticle(username, tag string) (*types.Wiki, error) {
+	dbPath := userDBPath(username)
+	if !goutils.FileExist(dbPath) {
+		err := os.MkdirAll(dbPath, 0755)
+		if err != nil {
+			return nil, err
 		}
-	)
+
+		return types.NewWiki(username, nil, ""), nil
+	}
+
+	var articles []*types.Article
 	err := filepath.Walk(dbPath, func(path string, info os.FileInfo, err error) error {
 		if err != nil {
 			return err
@@ -136,29 +140,19 @@ func listArticle(username string) (*types.Articles, error) {
 			return errors.Wrapf(err, "read article %s failed", info.Name())
 		}
 
-		articles.Articles = append(articles.Articles, &types.Article{
-			ID:        article.ID,
-			Title:     article.Title,
-			UpdatedAt: article.UpdatedAt,
-		})
+		if article.HasTag(tag) {
+			articles = append(articles, article)
+		}
 		return filepath.SkipDir
 	})
 	if err != nil {
 		return nil, errors.Wrap(err, "read db failed")
 	}
 
-	sort.Slice(articles.Articles, func(i, j int) bool {
-		return articles.Articles[i].UpdatedAt > articles.Articles[j].UpdatedAt
-	})
-
-	return articles, nil
+	return types.NewWiki(username, articles, tag), nil
 }
 
-var (
-	titleReg = regexp.MustCompile(`#\s+(.*?)\s*\n`)
-)
-
-func readArticle(username, id string) (*types.ArticleDetail, error) {
+func readArticle(username, id string) (*types.Article, error) {
 	filePath := articleFile(username, id)
 	info, err := os.Stat(filePath)
 	if err != nil {
@@ -170,21 +164,7 @@ func readArticle(username, id string) (*types.ArticleDetail, error) {
 		return nil, err
 	}
 
-	var (
-		content = string(data)
-		title   string
-	)
-	match := titleReg.FindStringSubmatch(content)
-	if len(match) >= 2 {
-		title = match[1]
-	}
-
-	return &types.ArticleDetail{
-		ID:        id,
-		Title:     title,
-		Content:   content,
-		UpdatedAt: info.ModTime().Unix(),
-	}, nil
+	return types.NewArticle(id, string(data), info.ModTime().Unix()), nil
 }
 
 func saveArticle(username, id string, content string, init bool) error {

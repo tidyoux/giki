@@ -6,6 +6,25 @@
 <body class="mdui-theme-primary-indigo mdui-theme-accent-deep-orange mdui-color-grey-200">
   <div class="mdui-container mdui-typo">
     <h1>{{.User}}'s wiki:</h1>
+    <!-- tags -->
+    <div>
+      <p>
+        {{if eq .SelectTag ""}}
+        <a class="mdui-btn mdui-ripple mdui-text-color-red">ALL</a>
+        {{else}}
+        <a class="mdui-btn mdui-ripple mdui-text-color-grey" href="/v1/article">ALL</a>
+        {{end}}
+
+        {{range .Tags}}
+          {{if eq $.SelectTag .}}
+        <a class="mdui-btn mdui-ripple mdui-text-color-red">{{.}}</a>
+          {{else}}
+        <a class="mdui-btn mdui-ripple mdui-text-color-grey" href="/v1/article?tag={{.}}">{{.}}</a>
+          {{end}}
+        {{end}}
+      </p>
+    </div>
+    <!-- articles -->
     <div>
       {{range .Articles}}
       <div class="mdui-card mdui-m-b-2 mdui-hoverable">
@@ -13,12 +32,18 @@
           <a class="mdui-typo-title mdui-valign" href="/v1/article/{{.ID}}">
             <i class="mdui-icon material-icons mdui-m-r-1">description</i>{{.Title}}
           </a>
-          <div class="mdui-divider mdui-m-t-2"></div>
-          <div class="mdui-typo-caption-opacity">{{.FormatUpdatedAt "2006-01-02 15:04:05"}}</div>
+          <div class="mdui-divider mdui-m-t-1"></div>
+        </div>
+        <div class="mdui-card-actions">
+          {{range .Tags}}
+          <button class="mdui-btn mdui-btn-dense mdui-text-color-grey-600">{{.}}</button>
+          {{end}}
+          <button class="mdui-btn mdui-btn-dense mdui-float-right" disabled>{{.FormatUpdatedAt "2006-01-02 15:04:05"}}</button>
         </div>
       </div>
       {{end}}
     </div>
+
     <form method="POST" action="/v1/article">
         <input class="mdui-fab mdui-fab-fixed mdui-color-theme" type="submit" value="+" />
     </form>
