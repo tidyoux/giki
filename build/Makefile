@@ -6,7 +6,7 @@ LDFLAGS=-ldflags "-s -w"
 all: server
 
 server:
-	cp -r static ${BIN_PATH}
 	go build ${LDFLAGS} -o ${BIN_PATH}/giki ${GO_MODULE}
+	cp -r static ${BIN_PATH}/static
 
 .PHONY: all server
