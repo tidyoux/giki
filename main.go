@@ -9,6 +9,7 @@ import (
 )
 
 var (
+	_ip   string
 	_port int
 )
 
@@ -21,6 +22,7 @@ func main() {
 	)
 
 	flags := c.Flags()
+	flags.StringVarP(&_ip, "ip", "i", "localhost", "service ip")
 	flags.IntVarP(&_port, "port", "p", 65321, "service port")
 
 	c.Execute()
@@ -49,5 +51,7 @@ func run(*cmd.Command) error {
 	v1.POST("/article/:id", handler.UpdateArticle)
 	v1.POST("/article/:id/delete", handler.DeleteArticle)
 
-	return r.Run(fmt.Sprintf(":%d", _port))
+	fmt.Printf("Your giki running at: http://%s:%d/v1/article\n", _ip, _port)
+
+	return r.Run(fmt.Sprintf("%s:%d", _ip, _port))
 }

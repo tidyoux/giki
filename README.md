@@ -16,8 +16,12 @@ It started as a translation from Racket of [Uiki](https://github.com/mattmight/u
 - git
 - multimarkdown
 
-## Installation
+## Build and run
 
 ```
 go get -u github.com/tidyoux/giki
+cd giki
+make
+cd build/bin
+./giki
 ```
